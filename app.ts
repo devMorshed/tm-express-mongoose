@@ -4,6 +4,7 @@ const app = express();
 
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import userRouter from "./routes/user.routes";
 import ErrorMiddleware from "./middleware/error";
 
 // bosy parser
@@ -21,6 +22,10 @@ app.use(
     origin: process.env.ORIGIN,
   })
 );
+
+
+// using all user router
+app.use("/api/v1", userRouter);
 
 // testing route
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {

@@ -2,14 +2,16 @@ require("dotenv").config();
 import bcrypt from "bcryptjs";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
+// email regex to validate email addresses
 const emailRegexPattern: RegExp =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/;
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{6,}@+[a-zA-Z0-9-]{3,}(?:\.[a-zA-Z0-9-]{3,})*$/;
 
 // Creating IUser interface by extending Document
 export interface IUser extends Document {
   name: string;
   batch: number;
   room: number;
+  block: string;
   balance: number;
   avatar: string;
   role: string;
@@ -35,6 +37,10 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       type: Number,
       required: [true, "Please enter your batch number"],
     },
+    block: {
+      type: String,
+      required: [true, "Please enter your block name"],
+    },
     email: {
       type: String,
       required: [true, "Please enter your email adress"],
@@ -54,6 +60,10 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     avatar: {
       type: String,
       default: "",
+    },
+    balance: {
+      type: Number,
+      default: 0,
     },
     role: {
       type: String,
