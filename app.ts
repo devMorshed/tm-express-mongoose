@@ -1,9 +1,10 @@
 require("dotenv").config();
 import express, { NextFunction, Request, Response } from "express";
-export const app = express();
+const app = express();
 
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import ErrorMiddleware from "./middleware/error";
 
 // bosy parser
 app.use(
@@ -32,3 +33,7 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
   err.statusCode = 400;
   next(err);
 });
+
+app.use(ErrorMiddleware);
+
+export default app;
