@@ -125,3 +125,60 @@ export const createActivationToken = (
 
   return { token, activationCode };
 };
+
+// Activate User
+interface IActivationRequest {
+  activation_token: string;
+  activation_code: string;
+}
+
+interface newUserInterface {
+  userData: IUser;
+  activationCode: string;
+}
+
+export const activateUser = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { activation_code, activation_token } =
+        req.body as IActivationRequest;
+
+      const newUser: newUserInterface = jwt.verify(
+        activation_token,
+        process.env.ACTIVATION_SECRET as string
+      ) as newUserInterface;
+
+      console.log("USER:",newUser);
+
+      if (newUser.activationCode !== activation_code) {
+        return next(new ErrorHandler("Invalid activation code", 400));
+      }
+
+      const { name, batch, block, email, password, room, role } = newUser?.userData;
+
+      const existingUser = await userModel.findOne({
+        email,
+      });
+
+      if (existingUser) {
+        return next(new ErrorHandler("User with this mail already exist", 400));
+      }
+
+      const user = await userModel.create({
+        name,
+        batch,
+        block,
+        email,
+        password,
+        room,
+        role,
+      });
+
+      res.status(201).json({
+        success: true,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
