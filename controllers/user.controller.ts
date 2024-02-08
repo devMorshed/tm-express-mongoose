@@ -7,8 +7,8 @@ import ErrorHandler from "../utils/ErrorHandler";
 import catchAsyncError from "../utils/catchAsyncError";
 import ejs from "ejs";
 import path from "path";
-import nodemailer from "nodemailer";
 import sendMail from "../utils/sendMail";
+
 
 // email regex to validate email addresses
 const emailRegexPattern: RegExp =
@@ -148,13 +148,12 @@ export const activateUser = catchAsyncError(
         process.env.ACTIVATION_SECRET as string
       ) as newUserInterface;
 
-      console.log("USER:",newUser);
-
       if (newUser.activationCode !== activation_code) {
         return next(new ErrorHandler("Invalid activation code", 400));
       }
 
-      const { name, batch, block, email, password, room, role } = newUser?.userData;
+      const { name, batch, block, email, password, room, role } =
+        newUser?.userData;
 
       const existingUser = await userModel.findOne({
         email,
@@ -176,7 +175,9 @@ export const activateUser = catchAsyncError(
 
       res.status(201).json({
         success: true,
+        message: "User created.",
       });
+
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
