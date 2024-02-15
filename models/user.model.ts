@@ -9,16 +9,10 @@ const emailRegexPattern: RegExp =
 // Creating IUser interface by extending Document
 export interface IUser extends Document {
   name: string;
-  batch: number;
-  room: number;
-  block: string;
-  balance: number;
   avatar: string;
   role: string;
   email: string;
   password: string;
-  isAccepted: boolean;
-  isBlocked: boolean;
   comparePassword: (password: string) => Promise<boolean>;
 }
 
@@ -28,18 +22,6 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     name: {
       type: String,
       required: [true, "Please enter your full name"],
-    },
-    batch: {
-      type: Number,
-      required: [true, "Please enter your batch number"],
-    },
-    room: {
-      type: Number,
-      required: [true, "Please enter your batch number"],
-    },
-    block: {
-      type: String,
-      required: [true, "Please enter your block name"],
     },
     email: {
       type: String,
@@ -61,21 +43,9 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       type: String,
       default: "",
     },
-    balance: {
-      type: Number,
-      default: 0,
-    },
     role: {
       type: String,
       default: "USER",
-    },
-    isAccepted: {
-      type: Boolean,
-      default: false,
-    },
-    isBlocked: {
-      type: Boolean,
-      default: false,
     },
   },
   { timestamps: true }

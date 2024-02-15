@@ -9,7 +9,6 @@ import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
 
-
 // email regex to validate email addresses
 const emailRegexPattern: RegExp =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{6,}@+[a-zA-Z0-9-]{3,}(?:\.[a-zA-Z0-9-]{3,})*$/;
@@ -17,9 +16,6 @@ const emailRegexPattern: RegExp =
 // defining Register Body interface
 interface IRegistrationBody {
   name: string;
-  batch: number;
-  room: number;
-  block: string;
   email: string;
   password: string;
 }
@@ -29,10 +25,10 @@ export const registrationUser = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       //  destructuring values
-      const { name, batch, room, block, email, password } = req.body;
+      const { name, email, password } = req.body;
 
       //   checkpoint for empty fields
-      if (!name || !email || !batch || !room || !password) {
+      if (!name || !email || !password) {
         return next(
           new ErrorHandler("Please provide all neccessary information", 400)
         );
@@ -55,11 +51,8 @@ export const registrationUser = catchAsyncError(
 
       const userData: IRegistrationBody = {
         name,
-        batch,
-        block,
         email,
         password,
-        room,
       };
 
       //   activation token to verify user
@@ -152,8 +145,7 @@ export const activateUser = catchAsyncError(
         return next(new ErrorHandler("Invalid activation code", 400));
       }
 
-      const { name, batch, block, email, password, room, role } =
-        newUser?.userData;
+      const { name, email, password, role } = newUser?.userData;
 
       const existingUser = await userModel.findOne({
         email,
@@ -165,11 +157,8 @@ export const activateUser = catchAsyncError(
 
       const user = await userModel.create({
         name,
-        batch,
-        block,
         email,
         password,
-        room,
         role,
       });
 
@@ -177,7 +166,6 @@ export const activateUser = catchAsyncError(
         success: true,
         message: "User created.",
       });
-
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
