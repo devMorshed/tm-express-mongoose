@@ -9,5 +9,3 @@ This template provides a boilerplate Express server setup using Mongoose, includ
     - Error handling middleware
     - Optional CORS configuration
     - Clear and concise code with comments
-
-## Fork, enhance, and share!
