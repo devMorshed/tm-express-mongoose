@@ -7,5 +7,4 @@ This template provides a boilerplate Express server setup using Mongoose, includ
     - Modular and customizable authentication logic
     - Secure and well-structured Express server setup
     - Error handling middleware
-    - Optional CORS configuration
-
+ 
