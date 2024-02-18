@@ -1,6 +1,12 @@
 import app from "./app";
+import dotenv from "dotenv";
+
 import { connectDB } from "./utils/db";
-require("dotenv").config();
+
+// modified dotenv config (requiring to importing )
+dotenv.config({
+  path: "./.env",
+});
 
 // Server creation after connecting database
 connectDB()

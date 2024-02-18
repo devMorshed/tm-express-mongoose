@@ -1,35 +1,37 @@
-require("dotenv").config();
 import express, { NextFunction, Request, Response } from "express";
-const app = express();
-
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRouter from "./routes/user.routes";
 import ErrorMiddleware from "./middleware/error";
+import ApiResponse from "./utils/ApiResponse";
+import ApiError from "./utils/ApiError";
 
-// bosy parser
-app.use(
-  express.json({
-    limit: "50mb",
-  })
-);
-
-// cookieparser
-app.use(cookieParser());
+const app = express();
 
 app.use(
   cors({
-    origin: process.env.ORIGIN,
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
   })
 );
 
+app.use(express.json({ limit: "1024kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.static("public"));
+app.use(cookieParser());
 
 // using all user router
 app.use("/api/v1", userRouter);
 
-// testing route
-app.get("/test", (req: Request, res: Response, next: NextFunction) => {
-  return res.json({ message: "Test route working" });
+// pinging route
+app.get("/ping", (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return res.json(
+      new ApiResponse(200, "Beep! Beep! Beep! | Your server is alive!!")
+    );
+  } catch (error: any) {
+    return next(new ApiError(error.message, 400));
+  }
 });
 
 // unknown/catch all route

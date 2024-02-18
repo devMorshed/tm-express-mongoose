@@ -8,6 +8,7 @@ import asyncHandler from "../utils/asyncHandler";
 import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
+import ApiResponse from "../utils/ApiResponse";
 
 // email regex to validate email addresses
 const emailRegexPattern: RegExp =
@@ -76,11 +77,14 @@ export const registrationUser = asyncHandler(
         }).then((data: any) => {
           console.log("status:", data);
           if (data.accepted.length > 0) {
-            res.status(200).json({
-              success: true,
-              message: `Activation mail has been sent to ${userData.email}`,
-              activationToken: token,
-            });
+            res.json(
+              new ApiResponse(
+                200,
+                `Activation mail has been sent to ${userData.email}`,
+                true,
+                { activationToken: token }
+              )
+            );
           }
         });
       } catch (error: any) {
@@ -160,10 +164,7 @@ export const activateUser = asyncHandler(
         role,
       });
 
-      res.status(201).json({
-        success: true,
-        message: "User created.",
-      });
+      res.json(new ApiResponse(201, "User created"));
     } catch (error: any) {
       return next(new ApiError(error.message, 400));
     }
