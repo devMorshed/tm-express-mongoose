@@ -3,8 +3,8 @@ import jwt, { Secret } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import userModel, { IUser } from "../models/user.model";
 
-import ErrorHandler from "../utils/ErrorHandler";
-import catchAsyncError from "../utils/catchAsyncError";
+import ApiError from "../utils/ApiError";
+import asyncHandler from "../utils/asyncHandler";
 import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
@@ -21,7 +21,7 @@ interface IRegistrationBody {
 }
 
 // User registration funtion
-export const registrationUser = catchAsyncError(
+export const registrationUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       //  destructuring values
@@ -30,15 +30,13 @@ export const registrationUser = catchAsyncError(
       //   checkpoint for empty fields
       if (!name || !email || !password) {
         return next(
-          new ErrorHandler("Please provide all neccessary information", 400)
+          new ApiError("Please provide all neccessary information", 400)
         );
       }
 
       const validEmail = emailRegexPattern.test(email);
       if (!validEmail) {
-        return next(
-          new ErrorHandler("Please provide valid email address", 400)
-        );
+        return next(new ApiError("Please provide valid email address", 400));
       }
 
       //   checking if user with this email alredy exists
@@ -46,7 +44,7 @@ export const registrationUser = catchAsyncError(
         email,
       });
       if (existingEmail) {
-        return next(new ErrorHandler("Email is already exists", 400));
+        return next(new ApiError("Email is already exists", 400));
       }
 
       const userData: IRegistrationBody = {
@@ -86,10 +84,10 @@ export const registrationUser = catchAsyncError(
           }
         });
       } catch (error: any) {
-        return next(new ErrorHandler(error.message, 400));
+        return next(new ApiError(error.message, 400));
       }
     } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+      return next(new ApiError(error.message, 400));
     }
   }
 );
@@ -130,7 +128,7 @@ interface newUserInterface {
   activationCode: string;
 }
 
-export const activateUser = catchAsyncError(
+export const activateUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { activation_code, activation_token } =
@@ -142,7 +140,7 @@ export const activateUser = catchAsyncError(
       ) as newUserInterface;
 
       if (newUser.activationCode !== activation_code) {
-        return next(new ErrorHandler("Invalid activation code", 400));
+        return next(new ApiError("Invalid activation code", 400));
       }
 
       const { name, email, password, role } = newUser?.userData;
@@ -152,7 +150,7 @@ export const activateUser = catchAsyncError(
       });
 
       if (existingUser) {
-        return next(new ErrorHandler("User with this mail already exist", 400));
+        return next(new ApiError("User with this mail already exist", 400));
       }
 
       const user = await userModel.create({
@@ -167,7 +165,9 @@ export const activateUser = catchAsyncError(
         message: "User created.",
       });
     } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
+      return next(new ApiError(error.message, 400));
     }
   }
 );
+
+export const userLogin = () => {};

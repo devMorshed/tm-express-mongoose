@@ -1,6 +1,7 @@
 require("dotenv").config();
 import bcrypt from "bcryptjs";
 import mongoose, { Document, Model, Schema } from "mongoose";
+import jwt from "jsonwebtoken";
 
 // email regex to validate email addresses
 const emailRegexPattern: RegExp =
@@ -14,6 +15,8 @@ export interface IUser extends Document {
   email: string;
   password: string;
   comparePassword: (password: string) => Promise<boolean>;
+  SignAccesToken: () => string;
+  SignRefreshToken: () => string;
 }
 
 // User Schema based on IUser interface.
@@ -59,6 +62,16 @@ UserSchema.pre<IUser>("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
+
+// sign access token
+UserSchema.methods.SignAccesToken = function () {
+  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "");
+};
+
+// sign refresh token
+UserSchema.methods.SignRefreshToken = function () {
+  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || "");
+};
 
 // Comparing password
 UserSchema.methods.comparePassword = async function (

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import ErrorHandler from "../utils/ErrorHandler";
+import ApiError from "../utils/ApiError";
 
 /**
  * Error handling middleware for handling various types of errors.
@@ -22,22 +22,22 @@ const ErrorMiddleware = (
     const message = `Resource not found. Invalid ${Object.keys(
       err.keyValue
     )} entered.`;
-    err = new ErrorHandler(message, 400);
+    err = new ApiError(message, 400);
   }
 
   if (err.code === 11000) {
     const message = `Duplicate ${Object.keys(err.keyValue)} entered.`;
-    err = new ErrorHandler(message, 400);
+    err = new ApiError(message, 400);
   }
 
   if (err.name === "JsonWebTokenError") {
     const message = `Invalid JSON Web Token, Try again.`;
-    err = new ErrorHandler(message, 400);
+    err = new ApiError(message, 400);
   }
 
   if (err.name === "TokenExpiredError") {
     const message = `JSON Web Token Expired, Try again.`;
-    err = new ErrorHandler(message, 400);
+    err = new ApiError(message, 400);
   }
 
   res.status(err.statusCode).json({
