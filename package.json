@@ -2,10 +2,9 @@
   "name": "express-temp",
   "version": "1.0.0",
   "description": "This template provides a boilerplate Express server setup using Mongoose, including pre-built, modular authentication routes using JWT (customizable). Its secure and well-structured codebase includes error handling and optional CORS configuration for a solid foundation. Get started quickly with your next Express + Mongoose project!",
-  "type": "module",
   "main": "server.js",
   "scripts": {
-   "dev": "ts-node-dev --respawn --transpile-only server.ts"
+    "dev": "ts-node-dev --respawn --transpile-only server.ts"
   },
   "author": "devMorshed",
   "license": "ISC",
@@ -20,10 +19,12 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
     "ioredis": "^5.3.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.1",
+    "nodemailer": "^6.9.9",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
   }
