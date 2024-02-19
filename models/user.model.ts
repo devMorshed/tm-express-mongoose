@@ -54,7 +54,7 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Hasshing Password
+// Hasshing Password before saving to Databse
 UserSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password")) {
     next();
@@ -63,17 +63,17 @@ UserSchema.pre<IUser>("save", async function (next) {
   next();
 });
 
-// sign access token
+// sign access token method added to the user model which will be used on controller
 UserSchema.methods.SignAccesToken = function () {
   return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "");
 };
 
-// sign refresh token
+// sign refresh token method added to the user model which will be used on controller
 UserSchema.methods.SignRefreshToken = function () {
   return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || "");
 };
 
-// Comparing password
+// Comparing password method to check if the password correct
 UserSchema.methods.comparePassword = async function (
   enteredPass: string
 ): Promise<boolean> {

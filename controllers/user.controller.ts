@@ -9,6 +9,7 @@ import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
 import ApiResponse from "../utils/ApiResponse";
+import { sendToken } from "../utils/jwt";
 
 // email regex to validate email addresses
 const emailRegexPattern: RegExp =
@@ -171,4 +172,42 @@ export const activateUser = asyncHandler(
   }
 );
 
-export const userLogin = () => {};
+interface IUserLogin {
+  email: string;
+  password: string;
+}
+
+export const userLogin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, password } = req.body;
+      if (!email) {
+        return next(new ApiError("Please provide an email", 400));
+      }
+      if (!password) {
+        return next(new ApiError("Please provide your password", 400));
+      }
+
+      // const existingUser = await userModel.findOne({ email });
+      // if (!existingUser) {
+      //   return next(new ApiError("No user found", 500));
+      // }
+
+      const user = await userModel.findOne({ email }).select("+password");
+
+      if (!user) {
+        return next(new ApiError("Invalid email or password", 400));
+      }
+
+      const ispassMatched = await user?.comparePassword(password);
+
+      if (ispassMatched) {
+        sendToken(user, 200, res);
+      } else {
+        return next(new ApiError("Wrong Password", 400));
+      }
+    } catch (err: any) {
+      return next(new ApiError("Something went wrong with login", 400));
+    }
+  }
+);
