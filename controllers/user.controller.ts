@@ -10,6 +10,7 @@ import path from "path";
 import sendMail from "../utils/sendMail";
 import ApiResponse from "../utils/ApiResponse";
 import { sendToken } from "../utils/jwt";
+import { redis } from "../utils/redis";
 
 // email regex to validate email addresses
 const emailRegexPattern: RegExp =
@@ -177,7 +178,7 @@ interface IUserLogin {
   password: string;
 }
 
-export const userLogin = asyncHandler(
+export const loginUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body;
@@ -208,6 +209,23 @@ export const userLogin = asyncHandler(
       }
     } catch (err: any) {
       return next(new ApiError("Something went wrong with login", 400));
+    }
+  }
+);
+
+export const logoutUser = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.cookie("access_token", "", { maxAge: 1 });
+      res.cookie("refresh_token", "", { maxAge: 1 });
+
+      // deleting user from redis
+      const userId = req.user?._id || "";
+      redis.del(userId);
+
+      res.json(new ApiResponse(200, "User logged out successfully"));
+    } catch (error: any) {
+      return next(new ApiError(400, error.message || "error from Log out "));
     }
   }
 );
